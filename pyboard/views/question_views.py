@@ -10,7 +10,9 @@ bp = Blueprint('question',__name__,url_prefix='/question')
 
 @bp.route('/list/')
 def _list():
+    page = request.args.get('page',type=int,default=1)
     q_list = Question.query.order_by(Question.create_date.desc())
+    q_list = q_list.paginate(page,per_page=20)
     return render_template('question/question_list.html', question_list = q_list)
 
 @bp.route('/detail/<int:question_id>/')
