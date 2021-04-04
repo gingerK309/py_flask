@@ -32,8 +32,38 @@
                     data-uri='{{url_for("question.delete",question_id=question.id)}}'>삭제</a>
             </div>
             {% endif %}
+
+            {% if question.comment_set|length>0 %}
+            <div class='mt-3'>
+                {% for comment in question.comment_set %}
+                <div class='comment py-2'>
+                    <span style='white-space:pre-line;'>
+                        {{comment.content}}
+                    </span>
+                    <span>
+                        - {{comment.user.username}}, {{comment.create_date|datetime}}
+                        {% if comment.modify_date %}
+                        (수정:{{comment.modify_date|datetime}})
+                        {% endif %}
+                    </span>
+                    {% if g.user == comment.user %}
+                    <a href='{{url_for("comment.modify_question", comment_id=comment.id)}}' class='small'>수정</a>
+                    <a href='#' class='small delete'
+                        data-uri='{{url_for("comment.delete_question",comment_id=comment.id)}}'>삭제</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div>
+                <a href='{{url_for("comment.create_question",question_id=question.id)}}' class='small'>
+                    댓글 추가 ...
+                </a>
+            </div>
         </div>
     </div>
+
+
     <h4 class='border-bottom my-3 py-2'>{{question.answer_set | length }}개의 답변이 있습니다.</h4>
     {% for a in question.answer_set %}
     <div class='card my-3'>
@@ -51,7 +81,6 @@
                 <div class='badge badge-light p-2 text-left'>
                     <div class='mb-2'>{{question.user.username}}</div>
                     <div>{{a.create_date|datetime}}</div>
-
                 </div>
             </div>
             {% if g.user == a.user %}
@@ -63,6 +92,34 @@
                 answer_id = a.id)}}'>삭제</a>
             </div>
             {% endif %}
+            <!--댓글-->
+            {% if a.comment_set|length>0 %}
+            <div class='mt-3'>
+                {% for comment in a.comment_set %}
+                <div class='comment py-2'>
+                    <span style='white-space:pre-line'>
+                        {{comment.content}}
+                    </span>
+                    <span>
+                        - {{comment.user.username}}, {{comment.create_date|datetime}}
+                        {% if comment.modify_date %}
+                        (수정:{{comment.modify_date|datetime}})
+                        {% endif %}
+                    </span>
+                    {% if g.user == comment.user %}
+                    <a href='{{url_for("comment.modify_answer",comment_id=comment.id)}}' class='small'>수정</a>
+                    <a href='#' class='small delete'
+                        data-uri='{{url_for("comment.delete_answer",comment_id=comment.id)}}'>삭제</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div>
+                <a href='{{ url_for("comment.create_answer", answer_id=a.id) }}' class='small'>
+                    댓글 추가 ...
+                </a>
+            </div>
         </div>
     </div>
     {% endfor %}
